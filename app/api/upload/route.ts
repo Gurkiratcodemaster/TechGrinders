@@ -23,6 +23,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please upload a PDF file" }, { status: 400 });
     }
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "File size exceeds 10MB limit. Please upload a smaller PDF." },
+        { status: 400 },
+      );
+    }
+
     const rawTitle = typeof titleField === "string" ? titleField.trim() : "";
     const fallbackTitle = file.name.replace(/\.pdf$/i, "");
     const title = rawTitle || fallbackTitle;
