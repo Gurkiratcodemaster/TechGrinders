@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ScholarMind
 
-## Getting Started
+ScholarMind is a simple Next.js + Python project where students can:
 
-First, run the development server:
+1. Upload digital PDFs (up to 5 pages)
+2. Paste notes as plain text
+3. Store everything in one central file for future Ask-AI usage
+
+## Stack
+
+1. Frontend: Next.js + Tailwind CSS
+2. Backend: FastAPI + pdfplumber
+3. Storage: JSON file at `data/central_store.json`
+
+## Central Storage Format
+
+The Python backend stores every entry in one file:
+
+```json
+{
+	"items": [
+		{
+			"id": "...",
+			"title": "Recursion Notes",
+			"type": "text",
+			"content": "...",
+			"chunks": ["...", "..."],
+			"createdAt": "2026-04-07T..."
+		}
+	],
+	"combinedText": "TITLE: ...\nDATE: ...\nCONTENT: ...\n----------------------\n"
+}
+```
+
+`combinedText` is ready for future Ask-AI prompts without re-reading PDFs.
+
+## Run Locally
+
+1. Install Node dependencies:
+
+```bash
+npm install
+```
+
+2. Install Python dependencies:
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd ..
+```
+
+3. Create environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+4. Run Python backend (port 8000):
+
+```bash
+npm run dev:py
+```
+
+5. Run Next.js frontend (port 3000):
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Endpoints
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### `POST /upload-pdf`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Accepts multipart form data:
 
-## Learn More
+1. `file` (PDF)
+2. `title` (optional)
 
-To learn more about Next.js, take a look at the following resources:
+Rules:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Must be a PDF
+2. Must be 5 pages or less
+3. If parsing fails: `Unable to read this PDF`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `POST /save-text`
 
-## Deploy on Vercel
+JSON body:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```json
+{
+	"title": "My Notes",
+	"content": "Paste your text here"
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### `GET /all-notes`
+
+Returns all stored items from `data/central_store.json`.
+
+## Example API Usage
+
+### Save text
+
+```bash
+curl -X POST http://127.0.0.1:8000/save-text \
+	-H "Content-Type: application/json" \
+	-d '{"title":"OS Notes","content":"Process scheduling notes..."}'
+```
+
+### Upload PDF
+
+```bash
+curl -X POST http://127.0.0.1:8000/upload-pdf \
+	-F "title=Networks Unit 1" \
+	-F "file=@/absolute/path/to/file.pdf"
+```
+
+### Fetch all notes
+
+```bash
+curl http://127.0.0.1:8000/all-notes
+```
+
+## Future-Ready Notes
+
+Current pipeline is intentionally simple for hackathons.
+Later, you can add:
+
+1. Embeddings for semantic search
+2. RAG with LangChain
+3. Claude/Gemini/OpenAI answer generation from `combinedText` or `chunks`

@@ -1,13 +1,27 @@
 "use client";
 
-import { ChangeEvent, useRef, useState } from "react";
-import {
-  addStoredItem,
-  formatDateLabel,
-  getPdfPageCount,
-  loadStoredItems,
-  StoredItem,
-} from "@/lib/storage";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+
+type BackendItem = {
+  id: string;
+  type: "pdf" | "text";
+  title: string;
+  content: string;
+  createdAt: string;
+  fileName?: string;
+  pages?: number;
+};
+
+const PYTHON_API_BASE_URL =
+  process.env.NEXT_PUBLIC_PYTHON_API_URL ?? "http://127.0.0.1:8000";
+
+function formatDateLabel(isoDate: string): string {
+  return new Date(isoDate).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default function UploadPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -16,13 +30,31 @@ export default function UploadPage() {
   const [textTitle, setTextTitle] = useState("");
   const [textContent, setTextContent] = useState("");
 
-  const [pdfItems, setPdfItems] = useState<StoredItem[]>(() =>
-    loadStoredItems().filter((item) => item.type === "pdf"),
-  );
+  const [pdfItems, setPdfItems] = useState<BackendItem[]>([]);
+  const [loadingPdfList, setLoadingPdfList] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [pdfError, setPdfError] = useState("");
   const [textError, setTextError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const refreshPdfItems = useCallback(async () => {
+    setLoadingPdfList(true);
+    try {
+      const response = await fetch(`${PYTHON_API_BASE_URL}/all-notes`);
+      const data = (await response.json()) as { items?: BackendItem[] };
+      const items = Array.isArray(data.items) ? data.items : [];
+      setPdfItems(items.filter((item) => item.type === "pdf"));
+    } catch {
+      setPdfError("Could not load notes from backend");
+    } finally {
+      setLoadingPdfList(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshPdfItems();
+  }, [refreshPdfItems]);
 
   const clearMessages = () => {
     setPdfError("");
@@ -44,34 +76,39 @@ export default function UploadPage() {
       return;
     }
 
-    const pageCount = await getPdfPageCount(file);
-    if (pageCount > 5) {
-      setPdfError("Only PDFs up to 5 pages allowed");
-      event.target.value = "";
-      return;
+    const formData = new FormData();
+    formData.append("file", file);
+    if (pdfTitle.trim()) {
+      formData.append("title", pdfTitle.trim());
     }
 
-    const fallbackTitle = file.name.replace(/\.pdf$/i, "");
-    const resolvedTitle = pdfTitle.trim() || fallbackTitle;
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${PYTHON_API_BASE_URL}/upload-pdf`, {
+        method: "POST",
+        body: formData,
+      });
 
-    const newItem: StoredItem = {
-      id: crypto.randomUUID(),
-      type: "pdf",
-      title: resolvedTitle,
-      content: file.name,
-      fileName: file.name,
-      pages: pageCount,
-      createdAt: new Date().toISOString(),
-    };
+      const data = (await response.json()) as { detail?: string };
+      if (!response.ok) {
+        setPdfError(data.detail ?? "Unable to read this PDF");
+        event.target.value = "";
+        return;
+      }
 
-    const updated = addStoredItem(newItem);
-    setPdfItems(updated.filter((item) => item.type === "pdf"));
-    setPdfTitle("");
-    setSuccessMessage("Saved successfully");
-    event.target.value = "";
+      await refreshPdfItems();
+      setPdfTitle("");
+      setSuccessMessage("Saved successfully");
+      event.target.value = "";
+    } catch {
+      setPdfError("Could not connect to Python backend");
+      event.target.value = "";
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleSaveText = () => {
+  const handleSaveText = async () => {
     clearMessages();
 
     if (!textTitle.trim()) {
@@ -84,18 +121,33 @@ export default function UploadPage() {
       return;
     }
 
-    const newItem: StoredItem = {
-      id: crypto.randomUUID(),
-      type: "text",
-      title: textTitle.trim(),
-      content: textContent.trim(),
-      createdAt: new Date().toISOString(),
-    };
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${PYTHON_API_BASE_URL}/save-text`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: textTitle.trim(),
+          content: textContent.trim(),
+        }),
+      });
 
-    addStoredItem(newItem);
-    setTextTitle("");
-    setTextContent("");
-    setSuccessMessage("Saved successfully");
+      const data = (await response.json()) as { detail?: string };
+      if (!response.ok) {
+        setTextError(data.detail ?? "Failed to save text");
+        return;
+      }
+
+      setTextTitle("");
+      setTextContent("");
+      setSuccessMessage("Saved successfully");
+    } catch {
+      setTextError("Could not connect to Python backend");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -132,9 +184,10 @@ export default function UploadPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
+            disabled={submitting}
             className="w-full border border-black bg-[#800080] px-4 py-3 text-left text-sm font-medium text-white"
           >
-            Upload PDF
+            {submitting ? "Saving..." : "Upload PDF"}
           </button>
           <p className="text-xs text-[#800080]">Limit: Max 5 pages</p>
 
@@ -163,9 +216,10 @@ export default function UploadPage() {
           <button
             type="button"
             onClick={handleSaveText}
+            disabled={submitting}
             className="w-full border border-black bg-black px-4 py-2 text-sm font-medium text-white sm:w-auto"
           >
-            Save to ScholarMind
+            {submitting ? "Saving..." : "Save to ScholarMind"}
           </button>
 
           {pdfError ? (
@@ -193,7 +247,11 @@ export default function UploadPage() {
             Chunking text... Indexing content... Retrieving relevant data...
           </div>
 
-          {pdfItems.length === 0 ? (
+          {loadingPdfList ? (
+            <p className="border border-black p-3 text-sm">Loading...</p>
+          ) : null}
+
+          {!loadingPdfList && pdfItems.length === 0 ? (
             <p className="border border-black p-3 text-sm">No notes uploaded yet</p>
           ) : null}
 

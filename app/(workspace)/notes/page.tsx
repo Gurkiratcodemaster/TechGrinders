@@ -1,12 +1,61 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { formatDateLabel, loadStoredItems, StoredItemType } from "@/lib/storage";
+import { useEffect, useMemo, useState } from "react";
+
+type StoredItemType = "pdf" | "text";
+
+type BackendItem = {
+  id: string;
+  type: StoredItemType;
+  title: string;
+  content: string;
+  createdAt: string;
+  fileName?: string;
+  pages?: number;
+};
+
+const PYTHON_API_BASE_URL =
+  process.env.NEXT_PUBLIC_PYTHON_API_URL ?? "http://127.0.0.1:8000";
+
+function formatDateLabel(isoDate: string): string {
+  return new Date(isoDate).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default function NotesPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | StoredItemType>("all");
-  const [items] = useState(() => loadStoredItems());
+  const [items, setItems] = useState<BackendItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const loadItems = async () => {
+      setLoading(true);
+      setLoadError("");
+
+      try {
+        const response = await fetch(`${PYTHON_API_BASE_URL}/all-notes`);
+        const data = (await response.json()) as { items?: BackendItem[] };
+
+        if (!response.ok) {
+          setLoadError("Could not load notes from backend");
+          return;
+        }
+
+        setItems(Array.isArray(data.items) ? data.items : []);
+      } catch {
+        setLoadError("Could not connect to Python backend");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadItems();
+  }, []);
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -79,7 +128,17 @@ export default function NotesPage() {
         </div>
       </section>
 
-      {filteredItems.length === 0 ? (
+      {loadError ? (
+        <section className="border border-black bg-black p-5 text-sm text-white">
+          {loadError}
+        </section>
+      ) : null}
+
+      {loading ? (
+        <section className="border border-black p-5 text-sm">Loading...</section>
+      ) : null}
+
+      {!loading && !loadError && filteredItems.length === 0 ? (
         <section className="border border-black p-5 text-sm">
           No notes uploaded yet
         </section>
