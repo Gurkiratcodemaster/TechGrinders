@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import io
 import os
-import re
 from typing import Any
 
 import pdfplumber
@@ -18,40 +17,6 @@ load_dotenv()
 
 FALLBACK_RESPONSE = "This information is not present in your saved notes"
 MODEL_NAME = "gemini-2.5-flash"
-MAX_CONTEXT_CHARS = 8000
-STOPWORDS = {
-    "a",
-    "an",
-    "and",
-    "are",
-    "as",
-    "at",
-    "be",
-    "by",
-    "for",
-    "from",
-    "how",
-    "i",
-    "in",
-    "is",
-    "it",
-    "of",
-    "on",
-    "or",
-    "that",
-    "the",
-    "to",
-    "was",
-    "what",
-    "when",
-    "where",
-    "which",
-    "who",
-    "why",
-    "with",
-    "you",
-    "your",
-}
 
 app = FastAPI(title="ScholarMind Python Backend")
 
@@ -81,62 +46,31 @@ def load_data() -> list[dict[str, Any]]:
     return []
 
 
-def _extract_keywords(question: str) -> list[str]:
-    words = re.findall(r"[a-zA-Z0-9]+", question.lower())
-    return [word for word in words if len(word) > 2 and word not in STOPWORDS]
-
-
-def find_relevant_chunks(question: str, items: list[dict[str, Any]]) -> list[str]:
-    keywords = _extract_keywords(question)
-    if not keywords:
-        return []
-
-    scored_chunks: list[tuple[int, str]] = []
+def build_context(items: list[dict[str, Any]]) -> list[str]:
+    context_parts: list[str] = []
 
     for item in items:
         title = str(item.get("title", "Untitled"))
         raw_chunks = item.get("chunks", [])
         content = str(item.get("content", "")).strip()
 
-        candidates: list[str] = []
-        if isinstance(raw_chunks, list):
-            candidates = [str(chunk).strip() for chunk in raw_chunks if str(chunk).strip()]
-        if not candidates and content:
-            candidates = [content]
+        if isinstance(raw_chunks, list) and raw_chunks:
+            for chunk in raw_chunks:
+                text = str(chunk).strip()
+                if text:
+                    context_parts.append(f"[{title}] {text}")
+        elif content:
+            context_parts.append(f"[{title}] {content}")
 
-        for chunk in candidates:
-            chunk_lower = chunk.lower()
-            score = sum(1 for keyword in keywords if keyword in chunk_lower)
-            if score > 0:
-                scored_chunks.append((score, f"[{title}] {chunk}"))
-
-    scored_chunks.sort(key=lambda item: item[0], reverse=True)
-
-    selected: list[str] = []
-    used_text: set[str] = set()
-    current_length = 0
-
-    for _, chunk in scored_chunks:
-        if chunk in used_text:
-            continue
-        next_length = current_length + len(chunk)
-        if next_length > MAX_CONTEXT_CHARS:
-            break
-        selected.append(chunk)
-        used_text.add(chunk)
-        current_length = next_length
-        if len(selected) >= 10:
-            break
-
-    return selected
+    return context_parts
 
 
-def ask_gemini(question: str, relevant_chunks: list[str]) -> str:
+def ask_gemini(question: str, context_parts: list[str]) -> str:
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         raise HTTPException(status_code=500, detail="Missing GEMINI_API_KEY")
 
-    context = "\n\n".join(relevant_chunks)
+    context = "\n\n".join(context_parts)
     prompt = (
         "You are an AI assistant that MUST answer ONLY using the provided context.\n\n"
         "STRICT RULES:\n"
@@ -253,16 +187,16 @@ def ask_ai(payload: AskPayload) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail="Question is required")
 
     items = load_data()
-    relevant_chunks = find_relevant_chunks(question, items)
+    context_parts = build_context(items)
 
-    if not relevant_chunks:
+    if not context_parts:
         return {"answer": FALLBACK_RESPONSE, "usedChunks": 0}
 
     try:
-        answer = ask_gemini(question, relevant_chunks)
+        answer = ask_gemini(question, context_parts)
     except HTTPException:
         raise
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail="Gemini request failed") from exc
 
-    return {"answer": answer, "usedChunks": len(relevant_chunks)}
+    return {"answer": answer, "usedChunks": len(context_parts)}

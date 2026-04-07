@@ -10,11 +10,10 @@ from uuid import uuid4
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT_DIR / "data"
 STORE_PATH = DATA_DIR / "central_store.json"
-SECTION_DIVIDER = "----------------------"
 
 
 def _default_store() -> dict[str, Any]:
-    return {"items": [], "combinedText": ""}
+    return {"items": []}
 
 
 def ensure_store() -> None:
@@ -32,13 +31,10 @@ def read_store() -> dict[str, Any]:
             return _default_store()
 
         items = parsed.get("items", [])
-        combined_text = parsed.get("combinedText", "")
         if not isinstance(items, list):
             items = []
-        if not isinstance(combined_text, str):
-            combined_text = ""
 
-        return {"items": items, "combinedText": combined_text}
+        return {"items": items}
     except (json.JSONDecodeError, OSError):
         return _default_store()
 
@@ -66,17 +62,13 @@ def chunk_text(text: str, chunk_size: int = 400) -> list[str]:
     return chunks
 
 
-def format_combined_section(title: str, created_at: str, content: str, item_type: str) -> str:
-    return (
-        f"TITLE: {title}\n"
-        f"DATE: {created_at}\n"
-        f"TYPE: {item_type}\n"
-        f"CONTENT: {content}\n"
-        f"{SECTION_DIVIDER}\n"
-    )
-
-
-def add_item(title: str, item_type: str, content: str, file_name: str | None = None, pages: int | None = None) -> dict[str, Any]:
+def add_item(
+    title: str,
+    item_type: str,
+    content: str,
+    file_name: str | None = None,
+    pages: int | None = None,
+) -> dict[str, Any]:
     cleaned_content = clean_text(content)
     created_at = datetime.now(timezone.utc).isoformat()
 
@@ -96,12 +88,6 @@ def add_item(title: str, item_type: str, content: str, file_name: str | None = N
 
     store = read_store()
     store["items"] = [item, *store["items"]]
-    store["combinedText"] = store["combinedText"] + format_combined_section(
-        title=title,
-        created_at=created_at,
-        content=cleaned_content,
-        item_type=item_type,
-    )
     write_store(store)
 
     return item

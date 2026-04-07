@@ -1,27 +1,28 @@
 {
   "items": [
     {
-      "id": "f8e7e8c8-6d8c-4547-a5fc-25a2dfcc99fe",
-      "title": "What is computer ?",
-      "type": "text",
-      "content": "computer is a machine",
+      "id": "d28040ee-c1e6-4791-a275-685f959666f2",
+      "title": "Resume",
+      "type": "pdf",
+      "content": "Gurkirat Singh Ludhiana, Punjab, India gurkiratjap@gmail.com \u2014 LinkedIn \u2014 GitHub \u2014 LeetCode Education Guru Nanak Dev Engineering College (GNDEC), Ludhiana Expected 2028 B.Tech in Computer Science and Engineering \u2014 CGPA: 8.0+/10.0 (Ongoing) Technical Skills Languages: C++, Python, TypeScript, HTML5, CSS3 Web Development: Next.js, Node.js, Tailwind CSS, REST APIs, Firebase, Supabase, Mon- goDB AI / ML: Scikit-learn, Pandas, Data Preprocessing, Classification Models Tools & Platforms: Git, GitHub, Linux, Vercel, Render Projects Heart Disease Detection Model Python, Scikit-learn, Pandas \u2022 Built a binary classification ML model to predict heart disease risk using clinical health data. \u2022 Applied data preprocessing and feature engineering to improve model performance. Career Choice Guidance System Next.js, TypeScript, Supabase \u2022 Developed afull-stack platformrecommending careerpaths based onuser skillsand interests. \u2022 Implemented authentication and real-time database management using Supabase. Smart Notes Finder Next.js, MongoDB, Tailwind CSS \u2022 Built a web application for organizing and searching academic notes. \u2022 Designed a responsive UI with efficient MongoDB-based storage. Certifications \u2022 Oracle Certified Foundations Associate \u2013 Artificial Intelligence and Machine Learning \u2022 Microsoft \u00d7 freeCodeCamp \u2013 Foundational C# Certification Hackathons & Competitions \u2022 Hackanauts (GNDEC): Collaborated in an on-campus hackathon to build solutions under strict deadlines. \u2022 GitGrade (Online): Built a GitHub profile analysis tool and showcased it in a version control challenge. \u2022 LeetCode DSA Practice: Regularly solving algorithmic problems to improve problem- solving skills. 1",
       "chunks": [
-        "computer is a machine"
+        "Gurkirat Singh Ludhiana, Punjab, India gurkiratjap@gmail.com \u2014 LinkedIn \u2014 GitHub \u2014 LeetCode Education Guru Nanak Dev Engineering College (GNDEC), Ludhiana Expected 2028 B.Tech in Computer Science and Engineering \u2014 CGPA: 8.0+/10.0 (Ongoing) Technical Skills Languages: C++, Python, TypeScript, HTML5, CSS3 Web Development: Next.js, Node.js, Tailwind CSS, REST APIs, Firebase, Supabase, Mon- goDB AI / ML: Scikit-learn, Pandas, Data Preprocessing, Classification Models Tools & Platforms: Git, GitHub, Linux, Vercel, Render Projects Heart Disease Detection Model Python, Scikit-learn, Pandas \u2022 Built a binary classification ML model to predict heart disease risk using clinical health data. \u2022 Applied data preprocessing and feature engineering to improve model performance. Career Choice Guidance System Next.js, TypeScript, Supabase \u2022 Developed afull-stack platformrecommending careerpaths based onuser skillsand interests. \u2022 Implemented authentication and real-time database management using Supabase. Smart Notes Finder Next.js, MongoDB, Tailwind CSS \u2022 Built a web application for organizing and searching academic notes. \u2022 Designed a responsive UI with efficient MongoDB-based storage. Certifications \u2022 Oracle Certified Foundations Associate \u2013 Artificial Intelligence and Machine Learning \u2022 Microsoft \u00d7 freeCodeCamp \u2013 Foundational C# Certification Hackathons & Competitions \u2022 Hackanauts (GNDEC): Collaborated in an on-campus hackathon to build solutions under strict deadlines. \u2022 GitGrade (Online): Built a GitHub profile analysis tool and showcased it in a version control challenge. \u2022 LeetCode DSA Practice: Regularly solving algorithmic problems to improve problem- solving skills. 1"
       ],
-      "createdAt": "2026-04-07T05:30:59.103184+00:00"
+      "createdAt": "2026-04-07T07:44:25.535640+00:00",
+      "fileName": "Resume.pdf",
+      "pages": 1
     },
     {
-      "id": "cee3c0eb-9eb8-41ea-ae42-28a11b4c8ae9",
+      "id": "43a53545-7707-41b8-be49-7a9f2ab90f4f",
       "title": "ASSIGNMENT 1",
       "type": "pdf",
       "content": "ASSIGNMENT 1 1.1 What is Artificial Intelligence? Artificial Intelligence (AI) is a branch of computer science that focuses on creating machines and systems capable of performing tasks that normally require human intelligence. These tasks include learning from experience, reasoning, problem-solving, understanding natural language, perception, and decision-making. AI enables machines to mimic cognitive functions such as thinking, learning, and adapting. It is widely used in various applications like virtual assistants, recommendation systems, autonomous vehicles, and medical diagnosis. In simple terms, AI is the ability of a machine to behave like a human being and perform intelligent tasks efficiently.",
       "chunks": [
         "ASSIGNMENT 1 1.1 What is Artificial Intelligence? Artificial Intelligence (AI) is a branch of computer science that focuses on creating machines and systems capable of performing tasks that normally require human intelligence. These tasks include learning from experience, reasoning, problem-solving, understanding natural language, perception, and decision-making. AI enables machines to mimic cognitive functions such as thinking, learning, and adapting. It is widely used in various applications like virtual assistants, recommendation systems, autonomous vehicles, and medical diagnosis. In simple terms, AI is the ability of a machine to behave like a human being and perform intelligent tasks efficiently."
       ],
-      "createdAt": "2026-04-07T05:19:29.324594+00:00",
+      "createdAt": "2026-04-07T07:44:05.393911+00:00",
       "fileName": "ASSIGNMENT 1.pdf",
       "pages": 1
     }
-  ],
-  "combinedText": "TITLE: ASSIGNMENT 1\nDATE: 2026-04-07T05:19:29.324594+00:00\nTYPE: pdf\nCONTENT: ASSIGNMENT 1 1.1 What is Artificial Intelligence? Artificial Intelligence (AI) is a branch of computer science that focuses on creating machines and systems capable of performing tasks that normally require human intelligence. These tasks include learning from experience, reasoning, problem-solving, understanding natural language, perception, and decision-making. AI enables machines to mimic cognitive functions such as thinking, learning, and adapting. It is widely used in various applications like virtual assistants, recommendation systems, autonomous vehicles, and medical diagnosis. In simple terms, AI is the ability of a machine to behave like a human being and perform intelligent tasks efficiently.\n----------------------\nTITLE: What is computer ?\nDATE: 2026-04-07T05:30:59.103184+00:00\nTYPE: text\nCONTENT: computer is a machine\n----------------------\n"
+  ]
 }
