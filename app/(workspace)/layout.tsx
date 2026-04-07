@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: "⌂" },
@@ -14,9 +14,14 @@ const navItems = [
 export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white text-black">
+    <main className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
       <div className="mx-auto min-h-screen max-w-7xl lg:grid lg:grid-cols-[240px_1fr]">
         <header className="flex items-center justify-between border-b border-black p-4 lg:hidden">
           <p className="title-font text-base font-bold uppercase tracking-[0.12em]">
@@ -79,7 +84,19 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
           </nav>
         </aside>
 
-        <section className="p-4 sm:p-6 md:p-8">{children}</section>
+        <section className="p-4 sm:p-6 md:p-8">
+          <div className="mb-6 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setDarkMode((prev) => !prev)}
+              className="inline-flex items-center justify-center rounded-full border border-black bg-white px-3 py-2 text-sm font-medium text-black shadow-sm transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+              aria-label={darkMode ? "Switch to light mode" : "Switch to night mode"}
+            >
+              <span className="text-lg">{darkMode ? "🌙" : "☀️"}</span>
+            </button>
+          </div>
+          {children}
+        </section>
       </div>
     </main>
   );

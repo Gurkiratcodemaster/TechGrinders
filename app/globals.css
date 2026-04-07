@@ -18,6 +18,40 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-roboto), sans-serif;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+html.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+html.dark .bg-white {
+  background-color: #0f172a !important;
+}
+
+html.dark .text-black {
+  color: #f8fafc !important;
+}
+
+html.dark .border-black {
+  border-color: #475569 !important;
+}
+
+html.dark .bg-black {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-[#800080] {
+  background-color: #7c3aed !important;
+}
+
+html.dark .text-[#800080] {
+  color: #c084fc !important;
+}
+
+html.dark .border-[#800080] {
+  border-color: #a855f7 !important;
 }
 
 .title-font {
