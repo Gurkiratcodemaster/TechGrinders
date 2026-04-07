@@ -17,7 +17,7 @@ from storage import add_item, clean_text, read_store
 load_dotenv()
 
 FALLBACK_RESPONSE = "This information is not present in your saved notes"
-MODEL_NAME = "gemini-1.5-pro"
+MODEL_NAME = "gemini-2.5-flash"
 MAX_CONTEXT_CHARS = 8000
 STOPWORDS = {
     "a",
