@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "id": "f8e7e8c8-6d8c-4547-a5fc-25a2dfcc99fe",
+      "title": "What is computer ?",
+      "type": "text",
+      "content": "computer is a machine",
+      "chunks": [
+        "computer is a machine"
+      ],
+      "createdAt": "2026-04-07T05:30:59.103184+00:00"
+    },
+    {
       "id": "cee3c0eb-9eb8-41ea-ae42-28a11b4c8ae9",
       "title": "ASSIGNMENT 1",
       "type": "pdf",
@@ -13,5 +23,5 @@
       "pages": 1
     }
   ],
-  "combinedText": "TITLE: ASSIGNMENT 1\nDATE: 2026-04-07T05:19:29.324594+00:00\nTYPE: pdf\nCONTENT: ASSIGNMENT 1 1.1 What is Artificial Intelligence? Artificial Intelligence (AI) is a branch of computer science that focuses on creating machines and systems capable of performing tasks that normally require human intelligence. These tasks include learning from experience, reasoning, problem-solving, understanding natural language, perception, and decision-making. AI enables machines to mimic cognitive functions such as thinking, learning, and adapting. It is widely used in various applications like virtual assistants, recommendation systems, autonomous vehicles, and medical diagnosis. In simple terms, AI is the ability of a machine to behave like a human being and perform intelligent tasks efficiently.\n----------------------\n"
+  "combinedText": "TITLE: ASSIGNMENT 1\nDATE: 2026-04-07T05:19:29.324594+00:00\nTYPE: pdf\nCONTENT: ASSIGNMENT 1 1.1 What is Artificial Intelligence? Artificial Intelligence (AI) is a branch of computer science that focuses on creating machines and systems capable of performing tasks that normally require human intelligence. These tasks include learning from experience, reasoning, problem-solving, understanding natural language, perception, and decision-making. AI enables machines to mimic cognitive functions such as thinking, learning, and adapting. It is widely used in various applications like virtual assistants, recommendation systems, autonomous vehicles, and medical diagnosis. In simple terms, AI is the ability of a machine to behave like a human being and perform intelligent tasks efficiently.\n----------------------\nTITLE: What is computer ?\nDATE: 2026-04-07T05:30:59.103184+00:00\nTYPE: text\nCONTENT: computer is a machine\n----------------------\n"
 }
